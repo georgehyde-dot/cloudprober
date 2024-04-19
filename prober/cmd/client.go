@@ -30,6 +30,7 @@ import (
 	spb "github.com/cloudprober/cloudprober/prober/proto"
 	configpb "github.com/cloudprober/cloudprober/probes/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
@@ -42,10 +43,12 @@ var (
 func main() {
 	flag.Parse()
 
-	conn, err := grpc.Dial(*server, grpc.WithInsecure())
+	conn, err := grpc.Dial(*server, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	defer conn.Close()
 
 	client := spb.NewCloudproberClient(conn)
 
